@@ -47,7 +47,7 @@ var geolocate = document.getElementById('geolocate');
 var map = L.mapbox.map('map', 'mapbox.streets');
 
 var myLayer = L.mapbox.featureLayer().addTo(map);
-
+var myLauer2= L.mapbox.feautureLayer().addTo(map);
 // This uses the HTML5 geolocation API, which is available on
 // most mobile browsers and modern browsers, but not in Internet Explorer
 //
@@ -86,7 +86,7 @@ map.on('locationfound', function(e) {
     map.on('locationfound', function(e) {
     map.fitBounds(e.bounds);
 
-    myLayer.setGeoJSON({
+    myLayer2.setGeoJSON({
         type: 'Feature',
         geometry: {
             type: 'Point',
