@@ -81,6 +81,25 @@ map.on('locationfound', function(e) {
         }
     });
 
+
+
+    map.on('locationfound', function(e) {
+    map.fitBounds(e.bounds);
+
+    myLayer.setGeoJSON({
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [0, 0]
+        },
+        properties: {
+            'title': 'Here I am!',
+            'marker-color': '#008000',
+            'marker-symbol': 'star'
+        }
+    });
+
+
     var firebaseRef = new Firebase("https://squadapp.firebaseio.com/locations/1234");
     firebaseRef.set({lat: e.latlng.lat, lon: e.latlng.lng});
     // And hide the geolocation button
