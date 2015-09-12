@@ -47,7 +47,8 @@ var geolocate = document.getElementById('geolocate');
 var map = L.mapbox.map('map', 'mapbox.streets');
 
 var myLayer = L.mapbox.featureLayer().addTo(map);
-var myLauer2= L.mapbox.feautureLayer().addTo(map);
+var myLayer2 = L.mapbox.featureLayer().addTo(map);
+
 // This uses the HTML5 geolocation API, which is available on
 // most mobile browsers and modern browsers, but not in Internet Explorer
 //
@@ -75,30 +76,24 @@ map.on('locationfound', function(e) {
             coordinates: [e.latlng.lng, e.latlng.lat]
         },
         properties: {
-            'title':'[e.latlng.lng, e.latlng.lat]',
+            'title': 'Here I am!',
             'marker-color': '#ff8888',
             'marker-symbol': 'star'
         }
     });
 
-
-
-    map.on('locationfound', function(e) {
-    map.fitBounds(e.bounds);
-
     myLayer2.setGeoJSON({
         type: 'Feature',
         geometry: {
             type: 'Point',
-            coordinates: [42.2828, 83.7347]
+            coordinates: [e.latlng.lng, e.latlng.lat]
         },
         properties: {
             'title': 'Here I am!',
-            'marker-color': '#008000',
+            'marker-color': '#ff8888',
             'marker-symbol': 'star'
         }
     });
-
 
     var firebaseRef = new Firebase("https://squadapp.firebaseio.com/locations/1234");
     firebaseRef.set({lat: e.latlng.lat, lon: e.latlng.lng});
