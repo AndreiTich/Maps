@@ -1,5 +1,5 @@
 {
-  "firebase": "testmaya",
+  "firebase": "squadapp",
   "public": ".",
   "ignore": [
     "firebase.json",
