@@ -81,6 +81,8 @@ map.on('locationfound', function(e) {
         }
     });
 
+    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/locations/1234");
+    firebaseRef.set({lat: e.latlng.lat, lon: e.latlng.lng});
     // And hide the geolocation button
     geolocate.parentNode.removeChild(geolocate);
 });
@@ -91,6 +93,27 @@ map.on('locationerror', function() {
     geolocate.innerHTML = 'Position could not be found';
 });
 </script>
+
+<head>
+  <!-- RSVP -->
+  <script src="path/to/rsvp.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://cdn.firebase.com/js/client/1.0.17/firebase.js"></script>
+
+  <!-- GeoFire -->
+  <script src="https://cdn.firebase.com/libs/geofire/2.0.0/geofire.min.js"></script>
+
+
+
+  var firebaseRef = new Firebase("https://squadapp.firebaseio.com/geofire/");
+var geoFire = new GeoFire(firebaseRef);
+
+</head>
+
+
+
+
 
 
 </body>
