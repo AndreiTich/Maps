@@ -40,7 +40,37 @@ var docCookies = {
 
 L.mapbox.accessToken = 'pk.eyJ1IjoiYW1yZWV0YW1hcHMiLCJhIjoiT0xMbndybyJ9.WDWX26jD9CcJCv7AC69dPw';
 var geolocate = document.getElementById('geolocate');
+var joinroom = document.getElementById('joinroom');
 var map = L.mapbox.map('map', 'mapbox.streets');
+
+if (!navigator.geolocation) {
+    geolocate.innerHTML = 'Geolocation is not available';
+} else {
+    geolocate.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        getLocation();
+    };
+}
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pushPosition);
+    } else { }
+}
+
+function pushPosition(position) {
+    FBuserlocation.set({x:position.coords.latitude, y:position.coords.longitude});
+    map.locate();
+}
+
+joinroom.onclick = function(e){
+    var roomdata = document.getElementById("roomtext").value;
+    docCookies.setItem("room",roomdata);
+    getLocation();
+}
+
+setInterval(function(){getLocation();}, 3000);
 
 //FIRST CHECK COOKIES
 if(docCookies.getItem("room") == null){
@@ -50,7 +80,7 @@ if(docCookies.getItem("room") == null){
     var FBroomlocation = firebaseRef.push();
 
     //second ID of User
-    var FBuserlocation = FBroomlocation.push({x:10, y:5});
+    var FBuserlocation = FBroomlocation.push({x:0, y:0})
 
     //console.log(FBroomlocation)
     var roomKey = FBroomlocation.key();
@@ -60,7 +90,7 @@ if(docCookies.getItem("room") == null){
 
     docCookies.setItem("room",roomKey);
     docCookies.setItem("UID",userKey);
-    
+
 } else {
     var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
 
@@ -69,8 +99,15 @@ if(docCookies.getItem("room") == null){
     console.log("room cookie : " + docCookies.getItem("room"))
 
     //second ID of User
-    var FBuserlocation = FBroomlocation.child(docCookies.getItem("UID"))
-    console.log("UID cookie : " + docCookies.getItem("UID"))
+    if(docCookies.getItem("UID") == null){
+        var FBuserlocation = FBroomlocation.push({x:0, y:0});
+        var userKey = FBuserlocation.key();
+        docCookies.setItem("UID",userKey);
+    } else {
+        var FBuserlocation = FBroomlocation.child(docCookies.getItem("UID"))
+        console.log("UID cookie : " + docCookies.getItem("UID"))
+    }
+    
 }
 
 //console.log(document.cookie);
@@ -90,15 +127,7 @@ var myLayer2 = L.mapbox.featureLayer().addTo(map);
 //
 // See this chart of compatibility for details:
 // http://caniuse.com/#feat=geolocation
-if (!navigator.geolocation) {
-    geolocate.innerHTML = 'Geolocation is not available';
-} else {
-    geolocate.onclick = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        map.locate();
-    };
-}
+
 
 // Once we've got a position, zoom and center the map
 // on it, and add a single marker.
@@ -133,6 +162,9 @@ map.on('locationfound', function(e) {
 
     // And hide the geolocation button
     geolocate.parentNode.removeChild(geolocate);
+    roomtext.parentNode.removeChild(roomtext);
+    joinroom.parentNode.removeChild(joinroom);
+    console.log("THIS IS WORKING");
 });
 
 // If the user chooses not to allow their location
