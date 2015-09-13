@@ -3,6 +3,11 @@
 <head>
 
 <meta charset=utf-8 />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <title>Squad</title>
 
@@ -15,15 +20,32 @@
 
 <body>
 
-<div id='map'></div>
-<div id='nav'>
-	<button type="button" id='joinroom' class='ui-button'>Join Room</button>
-	<input type="text" id='roomtext' name="FirstName" value="ROOMID">
-	<button href='#' id='geolocate' class='ui-button'>Make new room</a>
-		
-</form>
+
+
+<div id='map'>
 	
+	<div id ="content" style ="text-align: center;">
+  <div class ="row">
+  <button type="button" id='geolocate' class="btn btn-primary" padding-top:50%>Make A Room</button>
 </div>
+ <br/>
+<div class = "row">
+  <button type="button" id='joinroom' class="btn btn-primary">Join A Room</button>
+  </div>
+   <br/>
+  <div class = "row">
+  <label for="focusedInput">
+  <input class="form-control" id='roomtext' type="text" width ="100" placeholder="Room Id"></label></div>
+</div>
+<div id = "nav">
+	
+	<input class="form-control" id="roomID" type="text" width ="100" value="Your Room ID is " readonly >
+</div>
+
+
+
+</div>
+
 
 <head>
 

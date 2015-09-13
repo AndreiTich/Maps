@@ -51,6 +51,8 @@ if (!navigator.geolocation) {
     geolocate.onclick = function (e) {
         e.preventDefault();
         e.stopPropagation();
+        doCookies()
+        setRoomID();
         getLocation();
     };
 }
@@ -69,55 +71,56 @@ function pushPosition(position) {
 joinroom.onclick = function(e){
     var roomdata = document.getElementById("roomtext").value;
     docCookies.setItem("room",roomdata);
+    doCookies();
+    setRoomID();
     getLocation();
 }
+function doCookies(){
+    //FIRST CHECK COOKIES
+    if(docCookies.getItem("room") == null){
+        firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
 
-//FIRST CHECK COOKIES
-if(docCookies.getItem("room") == null){
-    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
+        //First ID of room
+        FBroomlocation = firebaseRef.push();
 
-    //First ID of room
-    var FBroomlocation = firebaseRef.push();
+        //second ID of User
+        FBuserlocation = FBroomlocation.push({x:0, y:0})
 
-    //second ID of User
-    var FBuserlocation = FBroomlocation.push({x:0, y:0})
+        //console.log(FBroomlocation)
+        roomKey = FBroomlocation.key();
+        //console.log(roomKey);
+        userKey = FBuserlocation.key();
+        //console.log(userKey);
 
-    //console.log(FBroomlocation)
-    var roomKey = FBroomlocation.key();
-    //console.log(roomKey);
-    var userKey = FBuserlocation.key();
-    //console.log(userKey);
-
-    docCookies.setItem("room",roomKey);
-    docCookies.setItem("UID",userKey);
-
-} else {
-    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
-
-    //First ID of room
-    var FBroomlocation = firebaseRef.child(docCookies.getItem("room"));
-    console.log("room cookie : " + docCookies.getItem("room"))
-
-    //second ID of User
-    if(docCookies.getItem("UID") == null){
-        var FBuserlocation = FBroomlocation.push({x:0, y:0});
-        var userKey = FBuserlocation.key();
+        docCookies.setItem("room",roomKey);
         docCookies.setItem("UID",userKey);
-    } else {
-        var FBuserlocation = FBroomlocation.child(docCookies.getItem("UID"))
-        console.log("UID cookie : " + docCookies.getItem("UID"))
-    }
-    
-}
 
+    } else {
+        firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
+
+        //First ID of room
+        FBroomlocation = firebaseRef.child(docCookies.getItem("room"));
+        console.log("room cookie : " + docCookies.getItem("room"))
+
+        //second ID of User
+        if(docCookies.getItem("UID") == null){
+            FBuserlocation = FBroomlocation.push({x:0, y:0});
+            userKey = FBuserlocation.key();
+            docCookies.setItem("UID",userKey);
+        } else {
+            FBuserlocation = FBroomlocation.child(docCookies.getItem("UID"))
+            console.log("UID cookie : " + docCookies.getItem("UID"))
+        }
+        
+    }
+}
 //console.log(document.cookie);
 
-FBroomlocation.on("value", function(snapshot){
-    console.log(snapshot.val())
-})
-
-
-
+function setRoomID(){
+    var room = docCookies.getItem("room");
+    document.getElementById("roomID").value = "Your room id is " + room;
+    document.getElementById("nav").style.visibility="visible";
+}
 
 var myLayer = L.mapbox.featureLayer().addTo(map);
 var myLayer2 = L.mapbox.featureLayer().addTo(map);
@@ -132,13 +135,39 @@ var myLayer2 = L.mapbox.featureLayer().addTo(map);
 // Once we've got a position, zoom and center the map
 // on it, and add a single marker.
 map.on('locationfound', function(e) {
-    map.fitBounds(e.bounds);
+
+    //FBroomlocation.on("value", function(snapshot){
+    //console.log(snapshot.val());
+    //});
+    var count = 0;
+    var x1 = e.latlng.lng;
+    var y1 = e.latlng.lat;
+    var x2 = e.latlng.lat;
+    var y2 = e.latlng.lat;
+    FBroomlocation.on("value", function(snapshot){
+        snapshot.forEach(function(childSnapshot) {
+                var childData = childSnapshot.val();
+                if(count == 0){
+                    x1 = childData.x
+                    y1 = childData.y
+                } else if(count == 1) {
+                    x2 = childData.x
+                    y2 = childData.y
+                }
+                count = count + 1
+            }
+
+        );
+    });
+
+    console.log(x1 + "$$$$" + y1 + "$$$$" + x2 + "$$$$" +y2)
 
     myLayer.setGeoJSON({
         type: 'Feature',
         geometry: {
             type: 'Point',
-            coordinates: [e.latlng.lng, e.latlng.lat]
+            //coordinates: [e.latlng.lng, e.latlng.lat]
+            coordinates: [y1, x1]
         },
         properties: {
             'title': 'Here I am!',
@@ -151,7 +180,7 @@ map.on('locationfound', function(e) {
         type: 'Feature',
         geometry: {
             type: 'Point',
-            coordinates: [0, 0]
+            coordinates: [y2, x2]
         },
         properties: {
             'title': 'Here I am!',
@@ -161,13 +190,14 @@ map.on('locationfound', function(e) {
     });
 
     // And hide the geolocation button
-    geolocate.parentNode.removeChild(geolocate);
-    roomtext.parentNode.removeChild(roomtext);
-    joinroom.parentNode.removeChild(joinroom);
     console.log("THIS IS WORKING");
     if(flip == 0){
         setInterval(function(){getLocation();}, 3000);
         flip = 1;
+        geolocate.parentNode.removeChild(geolocate);
+    roomtext.parentNode.removeChild(roomtext);
+    joinroom.parentNode.removeChild(joinroom);
+    map.fitBounds(e.bounds);
     }
 });
 

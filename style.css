@@ -19,15 +19,26 @@
 #nav {
     line-height:30px;
     position: absolute;
-    top: 45%;
-    left: 40%;
+    top: 0%;
+    left: 0%;
     height:10vh;
     width:30%;
     float:left;
     padding:5px; 
     clear: none;
+    z-index: 1;
+    visibility: hidden;
 
 }
+
+#content {
+      width: 50%;
+      padding-top: 15%;
+      margin: 0 auto;
+      z-index: 1;
+      position: relative;
+      clear: none;
+    }
 
 body { margin:0; padding:0; }
 #map { position:absolute; top:0; bottom:0; width:100%; }
