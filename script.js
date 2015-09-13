@@ -2,6 +2,30 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiYW1yZWV0YW1hcHMiLCJhIjoiT0xMbndybyJ9.WDWX26jD
 var geolocate = document.getElementById('geolocate');
 var map = L.mapbox.map('map', 'mapbox.streets');
 
+var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
+//First ID of room
+var FBroomlocation = firebaseRef.push();
+
+//second ID of User
+var FBuserlocation = FBroomlocation.push({x:10, y:5});
+var FBuserlocation = FBroomlocation.push({x:1, y:50});
+var FBuserlocation = FBroomlocation.push({x:15, y:55});
+
+console.log(FBroomlocation)
+var roomKey = FBroomlocation.key();
+console.log(roomKey);
+var userKey = FBuserlocation.key();
+console.log(userKey);
+
+FBroomlocation.on("value", function(snapshot){
+
+    console.log(snapshot.val())
+
+})
+
+
+
+
 var myLayer = L.mapbox.featureLayer().addTo(map);
 var myLayer2 = L.mapbox.featureLayer().addTo(map);
 
@@ -51,8 +75,6 @@ map.on('locationfound', function(e) {
         }
     });
 
-    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/locations/4321");
-    firebaseRef.set({lat: e.latlng.lat, lon: e.latlng.lng});
     // And hide the geolocation button
     geolocate.parentNode.removeChild(geolocate);
 });
