@@ -1,0 +1,33 @@
+.ui-button {
+  background:#3887BE;
+  color:#FFF;
+  display:block;
+  position:relative;
+  float: left;
+  width:160px;
+  z-index:100;
+  text-align:center;
+  padding:10px;
+  border:2px solid rgba(0,0,0,0.4);
+  border-radius:3px;
+  }
+  .ui-button:hover {
+    background:#3074a4;
+    color:#fff;
+    }
+
+#nav {
+    line-height:30px;
+    position: absolute;
+    top: 45%;
+    left: 40%;
+    height:10vh;
+    width:30%;
+    float:left;
+    padding:5px; 
+    clear: none;
+
+}
+
+body { margin:0; padding:0; }
+#map { position:absolute; top:0; bottom:0; width:100%; }
