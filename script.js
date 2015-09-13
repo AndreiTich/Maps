@@ -42,6 +42,8 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiYW1yZWV0YW1hcHMiLCJhIjoiT0xMbndybyJ9.WDWX26jD
 var geolocate = document.getElementById('geolocate');
 var joinroom = document.getElementById('joinroom');
 var map = L.mapbox.map('map', 'mapbox.streets');
+var flip = 0;
+
 
 if (!navigator.geolocation) {
     geolocate.innerHTML = 'Geolocation is not available';
@@ -69,8 +71,6 @@ joinroom.onclick = function(e){
     docCookies.setItem("room",roomdata);
     getLocation();
 }
-
-setInterval(function(){getLocation();}, 3000);
 
 //FIRST CHECK COOKIES
 if(docCookies.getItem("room") == null){
@@ -165,6 +165,10 @@ map.on('locationfound', function(e) {
     roomtext.parentNode.removeChild(roomtext);
     joinroom.parentNode.removeChild(joinroom);
     console.log("THIS IS WORKING");
+    if(flip == 0){
+        setInterval(function(){getLocation();}, 3000);
+        flip = 1;
+    }
 });
 
 // If the user chooses not to allow their location
