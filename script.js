@@ -1,26 +1,82 @@
+var docCookies = {
+  getItem: function (sKey) {
+    if (!sKey) { return null; }
+    return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+  },
+  setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+    var sExpires = "";
+    if (vEnd) {
+      switch (vEnd.constructor) {
+        case Number:
+          sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+          break;
+        case String:
+          sExpires = "; expires=" + vEnd;
+          break;
+        case Date:
+          sExpires = "; expires=" + vEnd.toUTCString();
+          break;
+      }
+    }
+    document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+    return true;
+  },
+  removeItem: function (sKey, sPath, sDomain) {
+    if (!this.hasItem(sKey)) { return false; }
+    document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+    return true;
+  },
+  hasItem: function (sKey) {
+    if (!sKey) { return false; }
+    return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+  },
+  keys: function () {
+    var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+    return aKeys;
+  }
+};
+
 L.mapbox.accessToken = 'pk.eyJ1IjoiYW1yZWV0YW1hcHMiLCJhIjoiT0xMbndybyJ9.WDWX26jD9CcJCv7AC69dPw';
 var geolocate = document.getElementById('geolocate');
 var map = L.mapbox.map('map', 'mapbox.streets');
 
-var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
-//First ID of room
-var FBroomlocation = firebaseRef.push();
+//FIRST CHECK COOKIES
+if(docCookies.getItem("room") == null){
+    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
 
-//second ID of User
-var FBuserlocation = FBroomlocation.push({x:10, y:5});
-var FBuserlocation = FBroomlocation.push({x:1, y:50});
-var FBuserlocation = FBroomlocation.push({x:15, y:55});
+    //First ID of room
+    var FBroomlocation = firebaseRef.push();
 
-console.log(FBroomlocation)
-var roomKey = FBroomlocation.key();
-console.log(roomKey);
-var userKey = FBuserlocation.key();
-console.log(userKey);
+    //second ID of User
+    var FBuserlocation = FBroomlocation.push({x:10, y:5});
+
+    //console.log(FBroomlocation)
+    var roomKey = FBroomlocation.key();
+    //console.log(roomKey);
+    var userKey = FBuserlocation.key();
+    //console.log(userKey);
+
+    docCookies.setItem("room",roomKey);
+    docCookies.setItem("UID",userKey);
+    
+} else {
+    var firebaseRef = new Firebase("https://squadapp.firebaseio.com/");
+
+    //First ID of room
+    var FBroomlocation = firebaseRef.child(docCookies.getItem("room"));
+    console.log("room cookie : " + docCookies.getItem("room"))
+
+    //second ID of User
+    var FBuserlocation = FBroomlocation.child(docCookies.getItem("UID"))
+    console.log("UID cookie : " + docCookies.getItem("UID"))
+}
+
+//console.log(document.cookie);
 
 FBroomlocation.on("value", function(snapshot){
-
     console.log(snapshot.val())
-
 })
 
 
@@ -86,5 +142,5 @@ map.on('locationerror', function() {
 });
 
 
-  var firebaseRef = new Firebase("https://squadapp.firebaseio.com/geofire/");
-var geoFire = new GeoFire(firebaseRef);
+
+  //var firebaseRef = new Firebase("https://squadapp.firebaseio.com/geofire/");
